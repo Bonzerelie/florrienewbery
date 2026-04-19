@@ -1,15 +1,19 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Florrie Newbery Classic 2026 - Rider Database</title>
+    <title>Florrie Newbery Classic 2026 - Commentary Dashboard</title>
     <style>
         :root {
             --bg-color: #f4f7f6;
             --text-color: #333;
             --card-bg: #fff;
             --primary: #0056b3;
+            --secondary: #eef2f5;
             --border: #ccc;
+            --highlight: #f39c12;
+            --team-color: #27ae60;
         }
 
         body {
@@ -23,11 +27,92 @@
         h1 {
             text-align: center;
             color: var(--primary);
+            margin-bottom: 20px;
         }
 
-        .dashboard {
+        /* --- Tabs Navigation --- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
             max-width: 1200px;
             margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Generic Info Sections for New Tabs --- */
+        .info-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-top: 5px solid var(--primary);
+            line-height: 1.6;
+        }
+        
+        .info-card h2 {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+        }
+
+        .info-card h3 {
+            color: #444;
+            margin-top: 20px;
+        }
+
+        .info-card ul {
+            padding-left: 20px;
+        }
+
+        .info-card li {
+            margin-bottom: 12px;
+        }
+
+        .highlight-text {
+            color: var(--highlight);
+            font-weight: bold;
+        }
+
+        /* --- Rider Database Layout --- */
+        .dashboard {
             display: grid;
             grid-template-columns: 350px 1fr;
             gap: 20px;
@@ -74,11 +159,18 @@
             background: #c0392b;
         }
 
+        .section-title {
+            margin: 15px 0 5px 0;
+            font-size: 16px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 5px;
+            color: var(--primary);
+        }
+
         .checkbox-list {
-            max-height: 70vh;
+            max-height: 28vh;
             overflow-y: auto;
-            border-top: 1px solid var(--border);
-            padding-top: 10px;
+            margin-bottom: 10px;
         }
 
         .checkbox-item {
@@ -112,6 +204,67 @@
             gap: 20px;
         }
 
+        /* Team Detailed Card */
+        .team-card-detailed {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--team-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .team-header-detailed {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
+
+        .team-header-detailed h2 {
+            margin: 0;
+            color: var(--team-color);
+            font-size: 24px;
+        }
+
+        .team-rank {
+            font-size: 14px;
+            color: #666;
+            background: #eef2f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .team-info-grid {
+            background: #fdfdfd;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .team-info-grid p {
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+        }
+
+        .team-info-grid p:last-child {
+            margin: 0;
+        }
+
+        .squad-member {
+            display: inline-block;
+            background: var(--secondary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 4px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+        }
+
+        /* Rider Detailed Card */
         .rider-card {
             background: var(--card-bg);
             padding: 20px;
@@ -138,7 +291,7 @@
         .rider-meta {
             font-size: 14px;
             color: #666;
-            background: #eef2f5;
+            background: var(--secondary);
             padding: 4px 8px;
             border-radius: 4px;
         }
@@ -160,17 +313,7 @@
             margin-bottom: 15px;
             background: #fdfdfd;
             padding: 10px;
-            border-left: 3px solid #f39c12;
-        }
-
-        ul.results-list {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        ul.results-list li {
-            margin-bottom: 5px;
-            line-height: 1.4;
+            border-left: 3px solid var(--highlight);
         }
 
         .empty-state {
@@ -180,6 +323,75 @@
             font-size: 18px;
             background: var(--card-bg);
             border-radius: 8px;
+        }
+
+        /* --- Teams Overview Grid --- */
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .team-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .rider-count {
+            background: rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .team-roster {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .team-roster li {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--bg-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .team-roster li:last-child {
+            border-bottom: none;
+        }
+
+        .roster-number {
+            font-weight: bold;
+            color: var(--primary);
+            width: 30px;
+            display: inline-block;
+        }
+
+        .roster-cat {
+            font-size: 12px;
+            color: #666;
+            background: var(--secondary);
+            padding: 3px 6px;
+            border-radius: 4px;
         }
 
         @media (max-width: 768px) {
@@ -196,20 +408,119 @@
 
     <h1>Florrie Newbery Classic 2026 Database</h1>
 
-    <div class="dashboard">
-        <div class="controls">
-            <input type="text" id="searchInput" class="search-bar" placeholder="Search riders by name...">
-            <div class="controls-header">
-                <strong>Select Riders:</strong>
-                <button class="clear-btn" id="clearBtn">Clear All</button>
-            </div>
-            <div class="checkbox-list" id="checkboxList">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('riders')">Rider Database</button>
+        <button class="tab-btn" onclick="switchTab('course')">Course Info</button>
+        <button class="tab-btn" onclick="switchTab('host')">Southend Wheelers</button>
+        <button class="tab-btn" onclick="switchTab('sponsors')">The Sponsors</button>
+        <button class="tab-btn" onclick="switchTab('bwtc')">The 2026 BWTC</button>
+        <button class="tab-btn" onclick="switchTab('keypoints')">Key Racing Points & Riders</button>
+        <button class="tab-btn" onclick="switchTab('teams')">Teams Overview</button>
+    </div>
+
+    <div id="tab-riders" class="tab-content active">
+        <div class="dashboard">
+            <div class="controls">
+                <div class="controls-header">
+                    <strong>Selection Menu:</strong>
+                    <button class="clear-btn" id="clearBtn">Clear All</button>
                 </div>
+                <input type="text" id="searchInput" class="search-bar" placeholder="Search teams or riders...">
+                
+                <h3 class="section-title">Select Teams</h3>
+                <div class="checkbox-list" id="teamCheckboxes">
+                    </div>
+
+                <h3 class="section-title">Select Riders</h3>
+                <div class="checkbox-list" id="riderCheckboxes">
+                    </div>
+            </div>
+
+            <div class="results" id="resultsContainer">
+                <div class="empty-state">Select teams or riders from the menu to view their profiles.</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-course" class="tab-content">
+        <div class="info-card" style="border-top-color: #3498db;">
+            <h2>The Course & Race Structure</h2>
+            <ul>
+                <li><strong>The Distance:</strong> A National B road race covering 98.8 km (61.6 miles).</li>
+                <li><strong>The Circuit (East Hanningfield):</strong> Expect a persistently rolling, heavily fatiguing route. Key landmarks include Howe Green, East Hanningfield, Rettendon, Coalhill, and the Beechwood Equestrian Centre.</li>
+                <li><strong>Safety & Escort:</strong> Racing on open roads. The National Escort Group (NEG) is providing a mobile safety corridor (not a full road closure). <br><span class="highlight-text">Commentary Note:</span> If you hear commissaires sounding their horns, it’s a warning for oncoming traffic.</li>
+                <li><strong>The Prime:</strong> Listen for the alarm and bell at the start of Lap 3! This triggers the Prime Lap, with a £50 cash prize waiting for the first rider across the line at the end of the lap.</li>
+                <li><strong>The Finish:</strong> Riders will take a specific return route to HQ (turning right onto Main Road down into Rettendon) to avoid double-triggering the MyLaps timing sensors.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tab-host" class="tab-content">
+        <div class="info-card" style="border-top-color: #e74c3c;">
+            <h2>The Host Club & The Namesake</h2>
+            <ul>
+                <li><strong>Southend Wheelers:</strong> Recently awarded British Cycling’s prestigious "Focus Club" status—one of only 25 nationwide—recognizing their excellence in rider development and community impact. In 2026, they are heavily expanding their women's and girls' programs.</li>
+                <li><strong>Who was Florrie Newbery?</strong> She made history as the very first woman to join Southend Wheelers on February 3rd, 1937. A true trailblazer, she led club runs, rallied local women to race time trials, and became the club's first female committee member.</li>
+                <li><strong>Organiser Shoutout:</strong> The event is promoted by Southend Wheelers, with Matt Stock stepping up as both Event Organiser and Safety Officer.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tab-sponsors" class="tab-content">
+        <div class="info-card" style="border-top-color: #f1c40f;">
+            <h2>Sponsors</h2>
+            <ul>
+                <li><strong>Sponsor Spotlight:</strong> The highly anticipated Lap 3 £50 Prime is generously sponsored by <span class="highlight-text">That Shot Media</span>.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tab-bwtc" class="tab-content">
+        <div class="info-card" style="border-top-color: #9b59b6;">
+            <h2>The 2026 BWTC (British Women's Team Cup)</h2>
+            <ul>
+                <li><strong>Season Opener:</strong> The Florrie Newbery Classic is round one of the five-race 2026 BWTC calendar. Teams score points based on their top four finishers.</li>
+                <li><strong>Brand New "Combativity Classification":</strong> This is a massive talking point for this season! For 2026, the BWTC is massively incentivizing early attacks.
+                    <ul>
+                        <li>If a breakaway of 8 or fewer riders has a 30-second gap at the half-distance mark, each rider earns <strong style="color:var(--primary);">+100 points</strong> for their team.</li>
+                        <li>If a breakaway wins the race with a 30-second gap, that's another <strong style="color:var(--primary);">+100 points</strong> each.</li>
+                        <li><strong>The Catch:</strong> Even if the mid-race break is caught, they keep those 100 points! Expect explosive racing right from the gun.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tab-keypoints" class="tab-content">
+        <div class="info-card" style="border-top-color: #e67e22;">
+            <h2>Key Racing Points & Riders to Watch</h2>
+            <p><strong>The Narrative:</strong> Expect fireworks early. The massive 8-rider London Academy squad will likely launch wave after wave of attacks to get riders up the road for those new Combativity points. Once the early breaks are reeled in on these sapping Essex lanes, the elite engines will take over.</p>
+            
+            <h3>Riders to Watch</h3>
+            <ul>
+                <li><strong>Georgina Oakley (Loughborough Lightning):</strong> The only Elite category rider on the start sheet. Coming off a successful track stint as a tandem pilot, she is recovering from illness but brings incredible pedigree. If she's healthy, she's a massive threat.</li>
+                <li><strong>Emilia Fletcher (London Academy):</strong> The outstanding unknown quantity. Coming from a triathlon background, she defaults to time-trial mode. She recently won the Easter Road Race by soloing the final four laps. If she gets a gap, she might just ride away from everyone.</li>
+                <li><strong>Isabella Johnson (Jadan Glasdon pb Vive le Velo):</strong> Finished 2nd in this exact race last year, just four seconds off the win. She brings brilliant recent form and is a prime favorite today.</li>
+                <li><strong>Amelia Staunton (Brother UK - On Form):</strong> Finished a highly impressive 6th here last year as a junior. Now a 2nd-category senior with a full season in her legs, she will be looking to better that result.</li>
+                <li><strong>Ella Tandy (Simpsons Nouvelles):</strong> A 19-year-old dark horse to watch. She’s stepping up from the juniors with a punchy style and a notoriously fast finish.</li>
+                <li><strong>Isabel Darvill (O’Shea Development Team):</strong> One of the most experienced riders in the pack. A bronze medalist at the 2024 National Circuit Race Championships, she has raced the Tour of Britain and RideLondon. Tactically brilliant and a major contender if it comes down to a reduced sprint.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tab-teams" class="tab-content">
+        <div class="info-card" style="border-top-color: var(--team-color);">
+            <h2>Squad Dynamics by Numbers</h2>
+            <ul>
+                <li><strong>London Academy (8 Riders):</strong> They are bringing the largest contingent to the race by a significant margin. The roster features Sasha Dyke (1st Cat), alongside Alice Connor, Emilia Fletcher, Emma Jane Hornsby, Hope Inglis, Lydia Turan, Esme Wiley (all 2nd Cat), and Ailsa McLagan (3rd Cat). This numerical advantage gives them immense power to dictate the pace and send riders into early breakaways to chase the new Combativity points.</li>
+                <li><strong>Wolfox Strykr Le Col RT (5 Riders):</strong> The second-largest squad on the day. Featuring Anouska Greenaway, Poppy Kisley, Nadine Oehmcke (2nd Cat), Genevieve Billington, and Sian Reynolds (3rd Cat).</li>
+                <li><strong>Brother UK - On Form (4 Riders):</strong> The defending 2025 BWTC champions. Their squad comprises Ellen Bennett, Ellen Inglis, Amelia Staunton (all 2nd Cat), and Lucy Neatham (3rd Cat). They will have to use tactical efficiency to match the larger squads.</li>
+                <li><strong>Paralloy RT (3 Riders):</strong> The new team fields 1st Cat Katie-Anne Calton, alongside Millie Skinner (2nd Cat) and Bea Ferry (3rd Cat).</li>
+            </ul>
         </div>
 
-        <div class="results" id="resultsContainer">
-            <div class="empty-state">Select riders from the menu or search by name to view their profiles.</div>
-        </div>
+        <div class="teams-grid" id="teamsGrid">
+            </div>
     </div>
 
     <script>
@@ -258,16 +569,90 @@
             { id: 42, name: "Georgia Lancaster", age: "Under-23 (Espoir)", team: "Loughborough Lightning", category: "2nd Category", media: "Recently featured in an exclusive interview with The British Continental titled 'Georgia Lancaster interview: a Lightning education'.", results: ["32nd Place – 2026 East Cleveland Classic, National Road Series (April 12, 2026)", "55th Place – 10th ANEXO/CAMS Women's CiCLE Classic, National A (March 22, 2026)", "3rd Place – North Lincolnshire Womens Classic (2025)", "5th Place – London Academy Easter Road Race, National B (April 5, 2026)", "6th Place – Colne Grand Prix, National Circuit Series (July 2025)", "29th Place (GC) – The Peaks 2 Day p/b Velo Edge, Stage Race (March 14-15, 2026)"] }
         ];
 
-        const checkboxList = document.getElementById('checkboxList');
+        const teamsInfo = {
+            "Brother UK - On Form": { manager: "Mark Botteley", rank: "1st in 2025", kit: "Black chest with 'brother at your side' logo, pink left sleeve, light blue/cyan right sleeve. Lower torso features large pink, blue, and black geometric shapes." },
+            "FTP-Fulfil The Potential-Racing": { manager: "Billy Oliver", rank: "2nd in 2025", kit: "Dark red/burgundy top half fading into a black bottom half. The chest features a prominent black circle containing the text 'FTP RACING'." },
+            "London Academy": { manager: "Peter Georgi", rank: "3rd in 2025", kit: "Highly vibrant, mottled gradient fading from orange/yellow at the shoulders down to pink. Features bold white text reading 'LONDON ACADEMY' across the chest." },
+            "Wolfox CAMS Le Col RT": { manager: "Jake Vita", rank: "4th in 2025", kit: "Predominantly solid black jerseys featuring a large grey 'WOLFOX' logo and a red rectangular 'CAMS' logo underneath." },
+            "Loughborough Lightning": { manager: "TBC", rank: "5th in 2025", kit: "Purple jerseys prominently displaying a large, white chevron across the chest, with subtle, lighter purple lightning graphics on the lower half." },
+            "Team Empella": { manager: "John Holmes", rank: "6th in 2025", kit: "Split top half: light blue on the right shoulder and white on the left, with 'EMPELLA' across the chest. The bottom half is covered in yellow and dark blue pixelated diamond shapes." },
+            "Jadan Vive le Velo p/b Glasdon": { manager: "TBC", rank: "8th in 2025", kit: "Dark navy blue base scattered with bright pink and light blue angular, diagonal rectangular slashes. The text 'Jadan' is displayed in white." },
+            "O’Shea - Development Team": { manager: "Brent Skinner", rank: "9th in 2025", kit: "Distinct tri-colour block design: bright orange shoulders and sleeves, a hot pink middle section, and a blue bottom section. The logos 'O\\'SHEA' and 'DOLTCINI' sit on the chest." },
+            "FTP Fusion": { manager: "TBC", rank: "10th in 2025", kit: "Highly textured splatter or camouflage pattern made of pink, blue, and black. It features a large black circular 'FTP FUSION' logo in the centre." },
+            "Team FTP Fusion": { manager: "TBC", rank: "10th in 2025", kit: "Highly textured splatter or camouflage pattern made of pink, blue, and black. It features a large black circular 'FTP FUSION' logo in the centre." },
+            "Liv Cycling Club - Halo Films": { manager: "Sarah King", rank: "11th in 2025", kit: "White base jersey with a thick, central purple vertical stripe running down the middle. The sleeves feature black cuffs, and the 'Liv' logo is prominent in black." },
+            "Raptor London": { manager: "Lauren O'Brien", rank: "13th in 2025", kit: "Gradient fading from dark red/magenta to black, with a blocky/pixelated pattern covering the sleeves. 'RAPTOR LONDON' text across the front." },
+            "Cowley Road Condors": { manager: "Kristen Lovelock", rank: "14th in 2025", kit: "Bright pink top half with a white condor logo, and a black bottom half, separated by a distinct white flame pattern." },
+            "Solas Cycling": { manager: "Paul Easto", rank: "N/A", kit: "Smooth gradient jersey fading from dark maroon/purple at the shoulders down to a warm orange at the waist. 'SOLAS RACE TEAM' in white." },
+            "Paralloy RT": { manager: "Nikki Metcalfe", rank: "New Team", kit: "White top third and a dark navy lower section, which are separated by a sharp dark red horizontal stripe. 'PARALLOY GROUP' is written on the white section." },
+            "London Dynamo": { manager: "James Northway", rank: "New Team", kit: "Sharp two-tone jersey: a solid black top half and a bright blue bottom half, split by a horizontal line. 'LONDON DYNAMO' text in white." },
+            "DRAFT": { manager: "Charlie Parry and Lucy Harris", rank: "New Team", kit: "Black top half with pink 'DRAFT' text. The lower half is filled with a multi-coloured (pink, yellow, blue) 3D optical illusion checkerboard pattern. Right sleeve patterned, left stark white." },
+            "Hillingdon Slipstreamers": { manager: "TBC", rank: "N/A", kit: "Yellow, black, and red horizontal bands on a dark base." },
+            "Primo RT": { manager: "Charlie Crawt", rank: "N/A", kit: "Dark blue with sleek neon green accents." },
+            "360cycling": { manager: "Joe Cadwallader", rank: "N/A", kit: "Red and black geometric block design." },
+            "The Hera Project": { manager: "TBC", rank: "New Team", kit: "Dark teal and gold." },
+            "Lea Valley CC": { manager: "TBC", rank: "N/A", kit: "Classic forest green with red and white horizontal stripes across the chest." },
+            "Velociposse": { manager: "TBC", rank: "N/A", kit: "Striking pink and white geometric lightning bolt patterns." },
+            "Simpson Nouvelles": { manager: "TBC", rank: "N/A", kit: "Minimalist grey with a single bold yellow diagonal sash." },
+            "Private Member": { manager: "N/A", rank: "N/A", kit: "Unbranded neutral kit." }
+        };
+
+        // --- Logic for Tab Navigation ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        // --- Logic for Rider Database Tab ---
         const searchInput = document.getElementById('searchInput');
         const resultsContainer = document.getElementById('resultsContainer');
         const clearBtn = document.getElementById('clearBtn');
+        let selectedTeams = new Set();
         let selectedRiders = new Set();
 
+        const allUniqueTeams = [...new Set(ridersData.map(r => r.team))].sort();
+
         function renderCheckboxes() {
-            checkboxList.innerHTML = '';
+            const teamCheckboxesContainer = document.getElementById('teamCheckboxes');
+            const riderCheckboxesContainer = document.getElementById('riderCheckboxes');
+            
+            teamCheckboxesContainer.innerHTML = '';
+            riderCheckboxesContainer.innerHTML = '';
+            
             const searchTerm = searchInput.value.toLowerCase();
             
+            // Render Teams
+            allUniqueTeams.forEach(team => {
+                if (team.toLowerCase().includes(searchTerm)) {
+                    const div = document.createElement('div');
+                    div.className = 'checkbox-item';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.id = `team-${team}`;
+                    input.value = team;
+                    input.checked = selectedTeams.has(team);
+                    
+                    input.addEventListener('change', (e) => {
+                        if (e.target.checked) selectedTeams.add(team);
+                        else selectedTeams.delete(team);
+                        renderResults();
+                    });
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `team-${team}`;
+                    label.textContent = team;
+
+                    div.appendChild(input);
+                    div.appendChild(label);
+                    teamCheckboxesContainer.appendChild(div);
+                }
+            });
+
+            // Render Riders
             ridersData.forEach(rider => {
                 if (rider.name.toLowerCase().includes(searchTerm)) {
                     const div = document.createElement('div');
@@ -280,11 +665,8 @@
                     input.checked = selectedRiders.has(rider.id);
                     
                     input.addEventListener('change', (e) => {
-                        if (e.target.checked) {
-                            selectedRiders.add(rider.id);
-                        } else {
-                            selectedRiders.delete(rider.id);
-                        }
+                        if (e.target.checked) selectedRiders.add(rider.id);
+                        else selectedRiders.delete(rider.id);
                         renderResults();
                     });
 
@@ -294,7 +676,7 @@
 
                     div.appendChild(input);
                     div.appendChild(label);
-                    checkboxList.appendChild(div);
+                    riderCheckboxesContainer.appendChild(div);
                 }
             });
         }
@@ -302,14 +684,40 @@
         function renderResults() {
             resultsContainer.innerHTML = '';
             
-            if (selectedRiders.size === 0) {
-                resultsContainer.innerHTML = '<div class="empty-state">Select riders from the menu or search by name to view their profiles.</div>';
+            if (selectedTeams.size === 0 && selectedRiders.size === 0) {
+                resultsContainer.innerHTML = '<div class="empty-state">Select teams or riders from the menu to view their profiles.</div>';
                 return;
             }
 
-            // Convert set to array and sort numerically by ID
-            const sortedIds = Array.from(selectedRiders).sort((a, b) => a - b);
+            // 1. Render Selected Team Cards First
+            const sortedTeams = Array.from(selectedTeams).sort();
+            sortedTeams.forEach(teamName => {
+                const info = teamsInfo[teamName] || { manager: "TBC", rank: "N/A", kit: "No kit description available." };
+                const teamRiders = ridersData.filter(r => r.team === teamName);
+                
+                let squadHTML = teamRiders.map(r => `<span class="squad-member">#${r.id} ${r.name}</span>`).join(' ');
 
+                const card = document.createElement('div');
+                card.className = 'team-card-detailed';
+                card.innerHTML = `
+                    <div class="team-header-detailed">
+                        <h2>${teamName}</h2>
+                        <span class="team-rank">${info.rank}</span>
+                    </div>
+                    <div class="team-info-grid">
+                        <p><strong>Manager:</strong> ${info.manager}</p>
+                        <p><strong>Kit Description:</strong> ${info.kit}</p>
+                    </div>
+                    <div class="team-squad-list">
+                        <strong>Squad for today:</strong><br>
+                        ${squadHTML}
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            });
+
+            // 2. Render Selected Rider Cards
+            const sortedIds = Array.from(selectedRiders).sort((a, b) => a - b);
             sortedIds.forEach(id => {
                 const rider = ridersData.find(r => r.id === id);
                 if (rider) {
@@ -347,13 +755,68 @@
         searchInput.addEventListener('input', renderCheckboxes);
 
         clearBtn.addEventListener('click', () => {
+            selectedTeams.clear();
             selectedRiders.clear();
             renderCheckboxes();
             renderResults();
         });
 
-        // Initial render
+        // --- Logic for Teams Overview Tab ---
+        function renderTeamsOverview() {
+            const teamsGrid = document.getElementById('teamsGrid');
+            teamsGrid.innerHTML = '';
+
+            const teamsMap = {};
+            ridersData.forEach(rider => {
+                if (!teamsMap[rider.team]) {
+                    teamsMap[rider.team] = [];
+                }
+                teamsMap[rider.team].push(rider);
+            });
+
+            const teamsArray = Object.keys(teamsMap).map(teamName => {
+                return {
+                    name: teamName,
+                    riders: teamsMap[teamName]
+                };
+            });
+
+            teamsArray.sort((a, b) => {
+                if (b.riders.length !== a.riders.length) {
+                    return b.riders.length - a.riders.length; 
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            teamsArray.forEach(team => {
+                const card = document.createElement('div');
+                card.className = 'team-card';
+
+                let rosterHTML = '<ul class="team-roster">';
+                team.riders.forEach(rider => {
+                    rosterHTML += `
+                        <li>
+                            <span><span class="roster-number">#${rider.id}</span> ${rider.name}</span>
+                            <span class="roster-cat">${rider.category.split(' ')[0]}</span>
+                        </li>
+                    `;
+                });
+                rosterHTML += '</ul>';
+
+                card.innerHTML = `
+                    <div class="team-header">
+                        <h3>${team.name}</h3>
+                        <span class="rider-count">${team.riders.length} Riders</span>
+                    </div>
+                    ${rosterHTML}
+                `;
+                teamsGrid.appendChild(card);
+            });
+        }
+
+        // Initialize the app
         renderCheckboxes();
+        renderTeamsOverview();
     </script>
 </body>
 </html>
