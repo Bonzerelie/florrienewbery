@@ -1,0 +1,359 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florrie Newbery Classic 2026 - Rider Database</title>
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #fff;
+            --primary: #0056b3;
+            --border: #ccc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+        }
+
+        .controls {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .clear-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .clear-btn:hover {
+            background: #c0392b;
+        }
+
+        .checkbox-list {
+            max-height: 70vh;
+            overflow-y: auto;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: #f0f0f0;
+        }
+
+        .checkbox-item input {
+            margin-right: 10px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .rider-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .rider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .rider-name {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .rider-meta {
+            font-size: 14px;
+            color: #666;
+            background: #eef2f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .data-label {
+            font-weight: bold;
+        }
+
+        .media-mentions {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 15px;
+            background: #fdfdfd;
+            padding: 10px;
+            border-left: 3px solid #f39c12;
+        }
+
+        ul.results-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        ul.results-list li {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #777;
+            font-size: 18px;
+            background: var(--card-bg);
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Florrie Newbery Classic 2026 Database</h1>
+
+    <div class="dashboard">
+        <div class="controls">
+            <input type="text" id="searchInput" class="search-bar" placeholder="Search riders by name...">
+            <div class="controls-header">
+                <strong>Select Riders:</strong>
+                <button class="clear-btn" id="clearBtn">Clear All</button>
+            </div>
+            <div class="checkbox-list" id="checkboxList">
+                </div>
+        </div>
+
+        <div class="results" id="resultsContainer">
+            <div class="empty-state">Select riders from the menu or search by name to view their profiles.</div>
+        </div>
+    </div>
+
+    <script>
+        const ridersData = [
+            { id: 1, name: "Lydia Baxter", age: "Senior", team: "FTP Fusion", category: "3rd Category", media: "Featured in Cycling Time Trials (CTT) coverage for her participation in the 2025 National Hill Climb circuit.", results: ["34th Place (Female) – RTTC National Hill Climb Championship (October 26, 2025)", "1st Place (Female) – HCRC 10-mile Time Trial (2025)", "2nd Place (Female) – Shire Hill Climb (Late 2025)", "Competitor – Duncan Murray Wines Road Race, National B (August 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 2, name: "Ellen Bennett", age: "22", team: "Brother UK - On Form", category: "2nd Category / Elite", media: "Frequently highlighted in The British Continental previews as a highly rated U23 point-scorer for the Brother UK squad.", results: ["22nd Place – Lancaster Grand Prix, National Road Series (July 2025)", "39th Place – London Academy Easter Road Race (April 5, 2026)", "10th Place – Florrie Newbery Classic (April 2025)", "20th Place – Banbury Star Women's Road Race, National B (2025)", "1st Place (2/3/4 Women) – Banbury Star Festival of Racing (2025)", "Not Listed – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 3, name: "Genevieve Billington", age: "Senior", team: "Wolfox CAMS Le Col RT", category: "3rd Category", media: "Profiled early in her career by the Worcester News as a rising West Midlands youth star.", results: ["37th Overall Ranking – Elite Women's British National Trophy Series, Cyclocross (2025–2026 Season)", "37th Place – Banbury Star Women's Road Race, National B (2025)", "Competitor – Shimano Lazer WMCCL #8 Cyclocross, Dudley (November 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 4, name: "Eva Callinan", age: "22", team: "Hillingdon Slipstreamers", category: "Under-23 (Espoir)", media: "Profiled by South West Londoner (2019) and celebrated as a 'rising junior star' by Cycling Time Trials (2020).", results: ["48th Place (Stage 1) / 50th Overall – Watersley Womens Challenge, Netherlands (2025)", "2nd Place – Witham Hall Grand Prix (April 2025)", "1st Place (Female Junior) – Chronos RT 10-mile TT (July 2020)", "19th Place (Female) – Reading CC 25-mile TT (2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 5, name: "Katie-Anne Calton", age: "20", team: "Paralloy RT", category: "2nd Category", media: "Highlighted in The British Continental's 2025 Royal Navy Cup preview as a rider who excels in circuit races.", results: ["7th Place – Florrie Newbery Classic (April 2025)", "4th Place – Will Houghton Memorial (2024)", "Competitor (Started) – 2026 CiCLE Classic (Finished outside top 60)", "Competitor – Cambridge Criterium (2025)", "Did Not Compete – 2026 East Cleveland Classic"] },
+            { id: 6, name: "Rebecca Clarke", age: "Senior", team: "Team FTP Fusion", category: "3rd Category", media: "Featured consistently in The British Continental results sheets as a reliable workhorse for FTP Fusion.", results: ["23rd Place – Maria Thompson Memorial Road Race, BWTC Final (September 7, 2025)", "28th Place – Florrie Newbery Classic, National B (April 27, 2025)", "36th Place – Duncan Murray Wines Road Race, National B (August 10, 2025)", "11th Place – Cambridge Criterium (August 24, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 7, name: "Alice Connor", age: "Senior", team: "London Academy", category: "2nd Category", media: "Highlighted in Cycling Time Trials (CTT) coverage for tackling varied disciplines, including standard road bike hill climbs.", results: ["15th Place (E/1/2/3) – London Academy Grand Prix #2 (August 31, 2025)", "45th Place – Duncan Murray Wines Road Race, National B (August 10, 2025)", "60th Place (Female, Road Bike) – Catford Hill Climb (October 2025)", "DNS – Maria Thompson Memorial Road Race (September 7, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 8, name: "Isabel Darvill", age: "Senior", team: "O’Shea - Development Team", category: "Elite", media: "Features an official profile on ProCyclingStats. Raced the Tour of Britain and RideLondon in 2024.", results: ["14th Place – Rapha Lincoln Grand Prix, National Road Series (May 11, 2025)", "18th Place – Ryedale Grasscrete Grand Prix, National Road Series (August 2025)", "48th Place – Omloop der Kempen Ladies, Netherlands - UCI 1.1 (May 2025)", "9th Place – London Academy Easter Road Race (April 5, 2026)", "DNF – 2026 CiCLE Classic (March 22, 2026)", "Did Not Compete – 2026 East Cleveland Classic"] },
+            { id: 9, name: "Sasha Dyke", age: "Senior", team: "London Academy", category: "2nd Category", media: "Featured on The British Continental as a key support rider in high-speed, chaotic bunch finishes.", results: ["38th Place – Rapha Lincoln Grand Prix, National Road Series (May 11, 2025)", "16th Place – Maria Thompson Memorial Road Race, BWTC Final (September 7, 2025)", "31st Place – Florrie Newbery Classic, National B (April 27, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 10, name: "Katie-Ann Elliston", age: "Senior", team: "Primo RT", category: "2nd Category", media: "Profiled by The British Continental as an 'experienced, tactically astute racer that wins circuit-style events.'", results: ["41st Place – London Academy Easter Road Race (April 5, 2026)", "36th Place – Florrie Newbery Classic, National B (April 27, 2025)", "4th Place (Cat 2/3/4) – Trash Mile Summer Slam IV Criterium (August 12, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 11, name: "Bea Ferry", age: "Under-23 (Espoir)", team: "Paralloy RT", category: "2nd Category", media: "Officially announced in British Cycling press releases as a key signing for the newly confirmed Elite Development Team, Paralloy RT.", results: ["1st Place (Guest/Ladies Access) – CCC Easter Series, Watersplash Road Race, Jersey (April 3, 2026)", "DNF – Florrie Newbery Classic, National B (April 27, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 12, name: "Evelyn Field", age: "Under-23 (Espoir)", team: "360cycling", category: "2nd Category", media: "Runs the popular 'Evelyn Field Cyclist' blog; chronicled her 2026 pre-season training camp in Mallorca.", results: ["9th Place – BUCS 25-mile Time Trial Championships (April 12, 2026)", "1st Place (Female) – University of Bristol Cycling Club (UOBCC) 10-mile Hill Climb (March 7, 2026)", "DNF – 2026 CiCLE Classic (March 22, 2026)", "DNS / Did Not Compete – 2026 East Cleveland Classic"] },
+            { id: 13, name: "Emilia Fletcher", age: "Senior", team: "London Academy", category: "2nd Category", media: "Headlined The British Continental after a solo victory at the London Academy Easter Road Race, reportedly pushing 800 watts on lap four.", results: ["1st Place – London Academy Easter Road Race at Alconbury, National B (April 5, 2026)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 14, name: "Hannah Graveney", age: "Senior", team: "O’Shea - Development Team", category: "2nd Category", media: "Holds an active ProCyclingStats profile and is recognized as a staple of the British domestic circuit.", results: ["25th Place – Florrie Newbery Classic, National B (April 27, 2025)", "Competitor – Kennel Hill Classic, National B (March 30, 2026)", "Registered – London Dynamo Road Race, National B (June 1, 2026)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 15, name: "Anouska Greenaway", age: "Senior", team: "Wolfox CAMS Le Col RT", category: "2nd Category", media: "Featured across Endurance Data and CTT archives for her phenomenal triathlete engine.", results: ["11th Place – Florrie Newbery Classic, National B (April 27, 2025)", "3rd Place – Ravenna Rumble on the Trundle Hill Climb (2025)", "DNF – Banbury Star Cyclists' Club Road Race, National B (2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 16, name: "Katie Heald", age: "Under-23 (Espoir)", team: "Team Empella", category: "2nd Category", media: "Highly active U23 rider, consistently securing top-50 finishes in massive, chaotic pelotons.", results: ["41st Place – Lancaster Grand Prix, National Road Series (July 2025)", "47th Place – Wentworth Woodhouse Grand Prix, National Road Series (September 1, 2025)", "9th Place (U23) – Bath CC Women's National B Road Race (August 3, 2025)", "23rd Place – Duncan Murray Wines Road Race, National B (August 10, 2025)", "25th Place – East and West Midlands Road Race Championship (June 1, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 17, name: "Sophie Holmes", age: "Senior", team: "The Hera Project", category: "Elite", media: "Profiled by Precision Hydration and Sundried. Races at an elite level despite having Cystic Fibrosis.", results: ["12th Place – Rapha Lincoln Grand Prix, National Road Series (May 11, 2025)", "38th Place – 2026 East Cleveland Classic (April 12, 2026)", "35th Place – Sheffield Grand Prix, Schwalbe Women's GP (July 16, 2025)", "Did Not Compete – 2026 CiCLE Classic"] },
+            { id: 18, name: "Emma Jane Hornsby", age: "Senior", team: "London Academy", category: "3rd Category", media: "Deeply involved in off-road racing as the Women’s Representative for the London Cyclo Cross Association (LCCA).", results: ["18th Place – London Academy Easter Road Race (April 5, 2026)", "24th Place – Cambridge Criterium (August 24, 2025)", "54th Place – Sheffield Grand Prix, Schwalbe Women's GP (July 16, 2025)", "62nd Place – Ilkley Cycle Races, Orbea Women's Grand Prix (July 4, 2025)", "DNF – 2026 CiCLE Classic (March 22, 2026)", "Did Not Compete – 2026 East Cleveland Classic"] },
+            { id: 19, name: "Georgia Huddleston", age: "Senior", team: "Lea Valley CC", category: "Senior", media: "Maintains an active World Triathlon athlete profile and represented Great Britain at the World Triathlon AG Championships.", results: ["3rd Place (25-29 Female AG) – World Triathlon Age-Group Championships, Torremolinos-Andalucia (October 17, 2024)", "4th Place – London Academy Easter Road Race, National B (April 5, 2026)", "30th Place (Elite Women) – GBR Sprint Triathlon National Championships (September 2023)", "DNF – 2026 East Cleveland Classic (April 12, 2026)"] },
+            { id: 20, name: "Ellen Inglis", age: "Under-23 / Senior", team: "Brother UK - On Form", category: "2nd Category", media: "Consistently highlighted in VeloUK regional race results as a key protected rider and point-scorer.", results: ["8th Place – Florrie Newbery Classic, National B (April 27, 2025)", "40th Place – London Academy Easter Road Race (April 5, 2026)", "8th Place – Cowley Road Condors Road Race (July 15, 2025)", "14th Place – East and West Midlands Road Race Championship (June 1, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 21, name: "Hope Inglis", age: "Under-23 (Espoir)", team: "London Academy", category: "2nd Category", media: "Holds a profile on ProCyclingStats and was noted for a high-profile off-season transfer to London Academy.", results: ["21st Place – London Academy Easter Road Race, National B (April 5, 2026)", "18th Place – Florrie Newbery Classic, National B (April 27, 2025)"] },
+            { id: 22, name: "Isabella Johnson", age: "Senior", team: "Jadan Vive le Velo p/b Glasdon", category: "2nd Category", media: "Recognized as a formidable presence on The British Continental and PCS, securing regular top-20 National B finishes.", results: ["14th Place – London Academy Easter Road Race (April 5, 2026)", "19th Place (GC) – GIANT TUGBY Ronde van Wymeswold, Stage Race (June 2025)", "19th Place – Duncan Murray Wines Road Race, National B (August 10, 2025)", "54th Place – Orbea Ilkley Women's Grand Prix (July 4, 2025)", "59th Place – Schwalbe Women's Sheffield Grand Prix (July 16, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 23, name: "Emily Jones", age: "Senior", team: "DRAFT", category: "2nd Category", media: "Highlighted as a core foundation rider of the newly emerging DRAFT Racing squad.", results: ["DNF – 10th ANEXO/CAMS Women's CiCLE Classic, National A (March 22, 2026)", "Registered – Florrie Newbery Classic, National B (April 19, 2026)", "Did Not Compete – 2026 East Cleveland Classic"] },
+            { id: 24, name: "Poppy Kisley", age: "Under-23 (Espoir)", team: "Wolfox CAMS Le Col RT", category: "2nd Category", media: "Highly rated on Spindata rankings for time-trial and hill climb performances. VeloUK highlighted her bunch-racing capabilities.", results: ["4th Place (Female E/1/2/3) – Melton Olympic Summer Crit Series #3 (August 31, 2025)", "2nd Place (Junior Female) – RTTC National Closed Circuit Hill Climb Championship (August 2024)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 25, name: "Lauren Lee", age: "Junior", team: "Liv Cycling Club - Halo Films", category: "3rd Category", media: "Featured within British Cycling's Junior National Road Series dispatches.", results: ["48th Place – London Academy Easter Road Race, National B / Junior National Road Series (April 5, 2026)"] },
+            { id: 26, name: "Georgia Mackenzie", age: "Senior", team: "Velociposse", category: "2nd Category", media: "Dominated the winter criterium scene at the Lee Valley Velopark.", results: ["1st Place (Women's 2/3/4) – Full Gas Winter Circuit Series #9 & #10 (January/February 2026)", "37th Place – London Academy Easter Road Race (April 5, 2026)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 27, name: "Ailsa McLagan", age: "Senior", team: "London Academy", category: "2nd Category", media: "Established senior competitor who showed excellent off-season versatility in regional cyclo-cross.", results: ["54th Place – 2026 CiCLE Classic (March 22, 2026)", "Competitor (Senior Women) – West Mids Regional Cyclo-cross Championships (November 24, 2025)", "DNF – 2026 East Cleveland Classic (April 12, 2026)"] },
+            { id: 28, name: "Lucy Neatham", age: "Senior", team: "Brother UK - On Form", category: "2nd Category", media: "Made a significant inter-squad transfer from London Academy to Brother UK - On Form for 2026.", results: ["30th Place – Florrie Newbery Classic, National B (April 27, 2025)", "DNF – 10th ANEXO/CAMS Women's CiCLE Classic, National A (March 22, 2026)", "DNF – 2026 East Cleveland Classic (April 12, 2026)"] },
+            { id: 29, name: "Georgina Oakley", age: "Senior", team: "Loughborough Lightning", category: "2nd Category", media: "Profiled on ProCyclingStats and photographed by Getty Images digging deep on the climbs.", results: ["35th Place – Ryedale Grasscrete Grand Prix, National Road Series (August 2025)", "45th Place – 2026 East Cleveland Classic (April 12, 2026)", "17th Place – Maria Thompson Memorial Road Race, BWTC Final (September 7, 2025)", "DNF – Florrie Newbery Classic, National B (April 27, 2025)", "DNF – 2026 CiCLE Classic (March 22, 2026)"] },
+            { id: 30, name: "Nadine Oehmcke", age: "Senior", team: "Wolfox CAMS Le Col RT", category: "2nd Category", media: "Scored a phenomenal podium finish at the end of the 2025 British Women's Team Cup season.", results: ["3rd Place – Maria Thompson Memorial Road Race, BWTC Final (September 7, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 31, name: "Emma Patterson", age: "Senior", team: "Private Member", category: "3rd Category", media: "Riding as an independent private member for the 2026 campaign.", results: ["Competitor – British Women's Team Cup Series (2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 32, name: "Sian Reynolds", age: "Senior", team: "Wolfox CAMS Le Col RT", category: "2nd Category", media: "Consistent and reliable endurance engine deployed for attritional early-season classics.", results: ["4th Place (Road Bike) – BUCS 25-mile Time Trial Championships (April 12, 2026)", "30th Place – London Academy Easter Road Race (April 5, 2026)", "40th Place – Florrie Newbery Classic, National B (April 27, 2025)", "58th Place – 10th ANEXO/CAMS Women's CiCLE Classic, National A (March 22, 2026)", "Did Not Compete – 2026 East Cleveland Classic"] },
+            { id: 33, name: "Rosie Simmons", age: "Under-23 (Espoir)", team: "Loughborough Lightning", category: "2nd Category", media: "High-profile U23 development spot graduate signed to the university-backed Loughborough Lightning program.", results: ["31st Place – 2026 East Cleveland Classic (April 12, 2026)", "21st Place – Florrie Newbery Classic, National B (April 27, 2025)", "16th Place – Capernwray Road Race, National B (April 4, 2026)", "Did Not Compete – 2026 CiCLE Classic"] },
+            { id: 34, name: "Millie Skinner", age: "Senior", team: "Paralloy RT", category: "2nd Category", media: "Transitioned from Team Boompods to Paralloy RT ahead of the 2026 season. Highly experienced tactical rider.", results: ["28th Place – Curlew Cup, National Road Series (September 2025)", "49th Place – 10th ANEXO/CAMS Women's CiCLE Classic, National A (March 22, 2026)", "20th Place – Florrie Newbery Classic, National B (April 27, 2025)", "DNF – London Academy Easter Road Race (April 5, 2026)", "Did Not Compete – 2026 East Cleveland Classic"] },
+            { id: 35, name: "Amelia Staunton", age: "Under-23 (Espoir)", team: "Brother UK - On Form", category: "2nd Category", media: "Absolute breakout junior star in 2025, now lining up in the U23 ranks as a massive pre-race favorite.", results: ["6th Place – Florrie Newbery Classic, National B (April 27, 2025)", "5th Place – Witham Hall Grand Prix (May 4, 2025)", "10th Place – London Dynamo Summer Road Race, National B (June 9, 2025)", "22nd Place (GC) – The Peaks 2 Day, Stage Race (March 14-15, 2026)", "29th Place – 10th ANEXO/CAMS Women's CiCLE Classic, National A (March 22, 2026)", "DNF – 2026 East Cleveland Classic (April 12, 2026)"] },
+            { id: 36, name: "Ella Tandy", age: "Under-23 (Espoir)", team: "Simpson Nouvelles", category: "2nd Category", media: "Transitioned from the Tofauti junior development setup; recently completed a block of Belgian classics.", results: ["26th Place – 2026 East Cleveland Classic (April 12, 2026)", "27th Place – 10th ANEXO/CAMS Women's CiCLE Classic, National A (March 22, 2026)", "59th Place – Grote Prijs Dermaut, Belgium (March 15, 2026)"] },
+            { id: 37, name: "Freya Taylor", age: "Under-23 (Espoir)", team: "Jadan Vive le Velo p/b Glasdon", category: "2nd Category", media: "Dominant force in the university racing circuit; recently took the BUCS individual time trial championship.", results: ["1st Place (Female TT Bike) – BUCS 25 Mile Time Trial Championships (April 12, 2026)", "1st Place (Team) – BUCS 25 Mile Team Time Trial Championships (April 12, 2026)", "7th Place – London Academy Easter Road Race (April 5, 2026)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 38, name: "Lydia Turan", age: "Senior", team: "London Academy", category: "3rd Category", media: "Detailed on Spindata for appearances in the grueling UK hill climb season.", results: ["13th Place – Sheffrec CC 12-mile SPOCO Road Bikes (June 4, 2025)", "25th Place (1st Female) – Bradfield Hill Climb (June 20, 2025)", "42nd Place – London Academy Easter Road Race (April 5, 2026)", "169th Place (Overall) – Monsal Head Hill Climb (October 5, 2025)", "DNF – 2026 CiCLE Classic (March 22, 2026)"] },
+            { id: 39, name: "Isabel Wallace", age: "Under-23 (Espoir)", team: "DRAFT", category: "2nd Category", media: "Highlighted for an inter-team transfer from Mud Dock Racing over to the newly formed DRAFT squad.", results: ["17th Place – Florrie Newbery Classic, National B (April 27, 2025)", "2nd Place – Southampton University Road Club Cat 3 Race (June 20, 2025)", "5th Place (Women's 2/3/4) – Trash Mile Summer Slam IV Criterium (August 12, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 40, name: "Esme Wiley", age: "Under-23 (Espoir)", team: "London Academy", category: "2nd Category", media: "Stepping up into her first full Under-23 season as part of the London Academy framework.", results: ["38th Place – London Academy Easter Road Race, National B (April 5, 2026)", "DNF – 2026 CiCLE Classic (March 22, 2026)"] },
+            { id: 41, name: "Ella Brown", age: "Under-23 (Espoir)", team: "FTP-Fulfil The Potential-Racing", category: "2nd Category", media: "Wildly versatile 2025, heavily mixing road racing with high-level gravel events and recognized as a hill climb specialist.", results: ["3rd Place (Female) – Dirty Reiver 200km Gravel Race (April 26, 2025)", "9th Place – Castle Combe Good Friday Easter Classic (April 18, 2025)", "21st Place (GC) – Ronde van Wymeswold, Stage Race (June 14-15, 2025)", "23rd Place – Banbury Star Women's Team Cup Road Race, National B (May 18, 2025)", "23rd Place – The Traka 360, Girona (May 2, 2025 - Gravel)", "57th Place – 9th ANEXO/CAMS Women's CiCLE Classic, National A (March 23, 2025)", "Did Not Compete – 2026 CiCLE Classic / 2026 East Cleveland Classic"] },
+            { id: 42, name: "Georgia Lancaster", age: "Under-23 (Espoir)", team: "Loughborough Lightning", category: "2nd Category", media: "Recently featured in an exclusive interview with The British Continental titled 'Georgia Lancaster interview: a Lightning education'.", results: ["32nd Place – 2026 East Cleveland Classic, National Road Series (April 12, 2026)", "55th Place – 10th ANEXO/CAMS Women's CiCLE Classic, National A (March 22, 2026)", "3rd Place – North Lincolnshire Womens Classic (2025)", "5th Place – London Academy Easter Road Race, National B (April 5, 2026)", "6th Place – Colne Grand Prix, National Circuit Series (July 2025)", "29th Place (GC) – The Peaks 2 Day p/b Velo Edge, Stage Race (March 14-15, 2026)"] }
+        ];
+
+        const checkboxList = document.getElementById('checkboxList');
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const clearBtn = document.getElementById('clearBtn');
+        let selectedRiders = new Set();
+
+        function renderCheckboxes() {
+            checkboxList.innerHTML = '';
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            ridersData.forEach(rider => {
+                if (rider.name.toLowerCase().includes(searchTerm)) {
+                    const div = document.createElement('div');
+                    div.className = 'checkbox-item';
+                    
+                    const input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.id = `rider-${rider.id}`;
+                    input.value = rider.id;
+                    input.checked = selectedRiders.has(rider.id);
+                    
+                    input.addEventListener('change', (e) => {
+                        if (e.target.checked) {
+                            selectedRiders.add(rider.id);
+                        } else {
+                            selectedRiders.delete(rider.id);
+                        }
+                        renderResults();
+                    });
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `rider-${rider.id}`;
+                    label.textContent = `${rider.id}. ${rider.name}`;
+
+                    div.appendChild(input);
+                    div.appendChild(label);
+                    checkboxList.appendChild(div);
+                }
+            });
+        }
+
+        function renderResults() {
+            resultsContainer.innerHTML = '';
+            
+            if (selectedRiders.size === 0) {
+                resultsContainer.innerHTML = '<div class="empty-state">Select riders from the menu or search by name to view their profiles.</div>';
+                return;
+            }
+
+            // Convert set to array and sort numerically by ID
+            const sortedIds = Array.from(selectedRiders).sort((a, b) => a - b);
+
+            sortedIds.forEach(id => {
+                const rider = ridersData.find(r => r.id === id);
+                if (rider) {
+                    const card = document.createElement('div');
+                    card.className = 'rider-card';
+                    
+                    let resultsHTML = '<ul class="results-list">';
+                    rider.results.forEach(result => {
+                        resultsHTML += `<li>${result}</li>`;
+                    });
+                    resultsHTML += '</ul>';
+
+                    card.innerHTML = `
+                        <div class="rider-header">
+                            <h2 class="rider-name">#${rider.id} - ${rider.name}</h2>
+                            <span class="rider-meta">${rider.team}</span>
+                        </div>
+                        <div class="data-grid">
+                            <div><span class="data-label">Age/Cat:</span> ${rider.age}</div>
+                            <div><span class="data-label">License:</span> ${rider.category}</div>
+                        </div>
+                        <div class="media-mentions">
+                            <strong>Media:</strong> ${rider.media}
+                        </div>
+                        <div>
+                            <span class="data-label">Recent Highlights:</span>
+                            ${resultsHTML}
+                        </div>
+                    `;
+                    resultsContainer.appendChild(card);
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', renderCheckboxes);
+
+        clearBtn.addEventListener('click', () => {
+            selectedRiders.clear();
+            renderCheckboxes();
+            renderResults();
+        });
+
+        // Initial render
+        renderCheckboxes();
+    </script>
+</body>
+</html>
